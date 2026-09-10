@@ -207,18 +207,24 @@
     white-space:nowrap; border-bottom: 1px solid transparent;
   }
   .scatter-track:hover { border-color: currentColor; }
-  .st-1  { top: 4%;  left: 4%;  animation: driftA 10s   ease-in-out infinite alternate, sizePulse 12s   ease-in-out infinite; }
-  .st-2  { top: 12%; left: 52%; animation: driftB 12s   ease-in-out infinite alternate, sizePulse 15s   ease-in-out infinite; }
-  .st-3  { top: 22%; left: 20%; animation: driftC 9s    ease-in-out infinite alternate, sizePulse 10.5s ease-in-out infinite; }
-  .st-4  { top: 30%; left: 70%; animation: driftA 11s   ease-in-out infinite alternate, sizePulse 14s   ease-in-out infinite; }
-  .st-5  { top: 40%; left: 6%;  animation: driftB 13s   ease-in-out infinite alternate, sizePulse 11s   ease-in-out infinite; }
-  .st-6  { top: 48%; left: 42%; animation: driftC 8.5s  ease-in-out infinite alternate, sizePulse 13.5s ease-in-out infinite; }
-  .st-7  { top: 58%; left: 64%; animation: driftA 14s   ease-in-out infinite alternate, sizePulse 16s   ease-in-out infinite; }
-  .st-8  { top: 66%; left: 10%; animation: driftB 9.5s  ease-in-out infinite alternate, sizePulse 12.5s ease-in-out infinite; }
-  .st-9  { top: 74%; left: 48%; animation: driftC 11.5s ease-in-out infinite alternate, sizePulse 17s   ease-in-out infinite; }
-  .st-10 { top: 82%; left: 26%; animation: driftA 10.5s ease-in-out infinite alternate, sizePulse 10s   ease-in-out infinite; }
-  .st-11 { top: 90%; left: 66%; animation: driftB 13.5s ease-in-out infinite alternate, sizePulse 15.5s ease-in-out infinite; }
-  .st-12 { top: 97%; left: 4%;  animation: driftC 12.5s ease-in-out infinite alternate, sizePulse 13s   ease-in-out infinite; }
+  /* Each top value guarantees real clearance below the sticky shelf-head
+     (~170px worst case) at ANY viewport height — not just a percentage,
+     which shrinks with a shorter window and stops being safe. It's a
+     weighted blend: mostly-fixed-pixel near the top of the cluster,
+     fading to the original percentage by the bottom (st-12 keeps its
+     97% almost exactly, so nothing overflows past the field). */
+  .st-1  { top: calc(4% + 168px);  left: 4%;  animation: driftA 10s   ease-in-out infinite alternate, sizePulse 12s   ease-in-out infinite; }
+  .st-2  { top: calc(12% + 154px); left: 52%; animation: driftB 12s   ease-in-out infinite alternate, sizePulse 15s   ease-in-out infinite; }
+  .st-3  { top: calc(22% + 137px); left: 20%; animation: driftC 9s    ease-in-out infinite alternate, sizePulse 10.5s ease-in-out infinite; }
+  .st-4  { top: calc(30% + 123px); left: 70%; animation: driftA 11s   ease-in-out infinite alternate, sizePulse 14s   ease-in-out infinite; }
+  .st-5  { top: calc(40% + 105px); left: 6%;  animation: driftB 13s   ease-in-out infinite alternate, sizePulse 11s   ease-in-out infinite; }
+  .st-6  { top: calc(48% + 91px);  left: 42%; animation: driftC 8.5s  ease-in-out infinite alternate, sizePulse 13.5s ease-in-out infinite; }
+  .st-7  { top: calc(58% + 74px);  left: 64%; animation: driftA 14s   ease-in-out infinite alternate, sizePulse 16s   ease-in-out infinite; }
+  .st-8  { top: calc(66% + 60px);  left: 10%; animation: driftB 9.5s  ease-in-out infinite alternate, sizePulse 12.5s ease-in-out infinite; }
+  .st-9  { top: calc(74% + 46px);  left: 48%; animation: driftC 11.5s ease-in-out infinite alternate, sizePulse 17s   ease-in-out infinite; }
+  .st-10 { top: calc(82% + 32px);  left: 26%; animation: driftA 10.5s ease-in-out infinite alternate, sizePulse 10s   ease-in-out infinite; }
+  .st-11 { top: calc(90% + 18px);  left: 66%; animation: driftB 13.5s ease-in-out infinite alternate, sizePulse 15.5s ease-in-out infinite; }
+  .st-12 { top: calc(97% + 5px);   left: 4%;  animation: driftC 12.5s ease-in-out infinite alternate, sizePulse 13s   ease-in-out infinite; }
   @keyframes driftA { from{ transform: translate(0,0); } to{ transform: translate(14px, 10px); } }
   @keyframes driftB { from{ transform: translate(0,0); } to{ transform: translate(-16px, 8px); } }
   @keyframes driftC { from{ transform: translate(0,0); } to{ transform: translate(10px, -12px); } }
@@ -264,13 +270,16 @@
      just the title/progress/time filling in and the art-blank swatch tinting
      to --accent. No album art, no logo, no third-party styling of any kind. */
   .radio-idle { display:flex; align-items:center; gap: 10px; }
-  .radio-art-blank { width:38px; height:38px; flex:none; border:1px solid color-mix(in srgb, var(--ink-current) 30%, transparent); background:transparent; transition: background-color .4s ease; }
-  .radio-art-blank.is-active { background: var(--accent); }
+  .radio-art-blank { width:38px; height:38px; flex:none; border:1px solid color-mix(in srgb, var(--ink-current) 30%, transparent); background:transparent; }
+  /* Same three-stop cycle as the page background (stone → indigo → brown),
+     offset by one step so the art doesn't just echo whatever section
+     the visitor happens to be scrolled to: indigo → brown → stone. */
+  .radio-art-blank.is-active { background: linear-gradient(135deg, #211D46 0%, #3B2A22 52%, #D3D1C9 100%); }
   .radio-idle-main { flex:1; min-width:0; }
   .radio-idle-title { font-size:12px; margin:0 0 8px; min-height:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .radio-idle-row { display:flex; align-items:center; gap:8px; }
   .radio-idle-progress { flex:1; height:3px; background: color-mix(in srgb, var(--ink-current) 20%, transparent); cursor:pointer; }
-  .radio-idle-progress-fill { width:0%; height:100%; background: var(--accent); }
+  .radio-idle-progress-fill { width:0%; height:100%; background: linear-gradient(90deg, #211D46 0%, #3B2A22 52%, #D3D1C9 100%); }
   .radio-idle-time { font-size: 10px; color: var(--ink-soft-current); flex:none; }
   .radio-idle-play {
     width:26px; height:26px; flex:none; border-radius:50%; border:1px solid var(--ink-current);
@@ -737,7 +746,10 @@
     playBtn.textContent = '►';
   }
 
+  var currentTrackEl = null;
+
   function playTrack(anchorEl){
+    currentTrackEl = anchorEl;
     var trackId = anchorEl.getAttribute('data-trackid');
     var title = anchorEl.textContent;
     var href = anchorEl.getAttribute('href');
@@ -775,7 +787,7 @@
         else { audioEl.pause(); playBtn.textContent = '►'; }
         return;
       }
-      playTrack(pickRandomTrack());
+      playTrack(pickRandomTrack(currentTrackEl));
     });
   }
 
@@ -794,10 +806,11 @@
     timeEl.textContent = formatTime(audioEl.currentTime);
   });
 
-  // 30-second preview ends — keep the ambient "radio" feel going by
-  // rolling into another random track rather than just stopping.
+  // 30-second preview ends — shuffle to a genuinely different random
+  // track (never the one that just finished) rather than risking a
+  // same-track repeat that reads as the preview "restarting".
   audioEl.addEventListener('ended', function(){
-    playTrack(pickRandomTrack());
+    playTrack(pickRandomTrack(currentTrackEl));
   });
 
   // Minimize collapses the panel to a small round tab, not just a shorter bar
