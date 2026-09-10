@@ -12,6 +12,7 @@
     --ink-current:#171029;
     --ink-soft-current:#57536B;
     --bg-current:#D3D1C9;
+    --radio-current:#211D46;
     --accent:#4A3FB0;
     --nav-h: 68px;
     --font-display: 'Space Grotesk', Arial, sans-serif;
@@ -270,16 +271,19 @@
      just the title/progress/time filling in and the art-blank swatch tinting
      to --accent. No album art, no logo, no third-party styling of any kind. */
   .radio-idle { display:flex; align-items:center; gap: 10px; }
-  .radio-art-blank { width:38px; height:38px; flex:none; border:1px solid color-mix(in srgb, var(--ink-current) 30%, transparent); background:transparent; }
-  /* Same three-stop cycle as the page background (stone → indigo → brown),
-     offset by one step so the art doesn't just echo whatever section
-     the visitor happens to be scrolled to: indigo → brown → stone. */
-  .radio-art-blank.is-active { background: linear-gradient(135deg, #211D46 0%, #3B2A22 52%, #D3D1C9 100%); }
+  .radio-art-blank { width:38px; height:38px; flex:none; border:1px solid color-mix(in srgb, var(--ink-current) 30%, transparent); background:transparent; transition: background-color .9s ease; }
+  /* Solid, not a gradient — same stone/indigo/brown palette the page
+     background cycles through on scroll, just one step offset from
+     whatever section is currently active. --radio-current is updated
+     by the same scroll observer that drives --bg-current below. */
+  .radio-art-blank.is-active { background-color: var(--radio-current); }
   .radio-idle-main { flex:1; min-width:0; }
   .radio-idle-title { font-size:12px; margin:0 0 8px; min-height:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .radio-idle-row { display:flex; align-items:center; gap:8px; }
   .radio-idle-progress { flex:1; height:3px; background: color-mix(in srgb, var(--ink-current) 20%, transparent); cursor:pointer; }
-  .radio-idle-progress-fill { width:0%; height:100%; background: linear-gradient(90deg, #211D46 0%, #3B2A22 52%, #D3D1C9 100%); }
+  /* Solid fill, same color end-to-end — it reflects scroll position,
+     not playback progress, so it never changes color as a song plays. */
+  .radio-idle-progress-fill { width:0%; height:100%; background-color: var(--radio-current); transition: background-color .9s ease; }
   .radio-idle-time { font-size: 10px; color: var(--ink-soft-current); flex:none; }
   .radio-idle-play {
     width:26px; height:26px; flex:none; border-radius:50%; border:1px solid var(--ink-current);
@@ -402,7 +406,7 @@
   </div>
 </header>
 
-<section class="hero" data-bg="#D3D1C9" data-ink="#171029" data-inksoft="#57536B">
+<section class="hero" data-bg="#D3D1C9" data-radio="#211D46" data-ink="#171029" data-inksoft="#57536B">
   <div class="page hero-row">
     <h1 class="hero-name">Kep Ange</h1>
   </div>
@@ -410,7 +414,7 @@
 
 <div class="page">
 
-  <section id="entries" class="shelf" data-bg="#D3D1C9" data-ink="#171029" data-inksoft="#57536B">
+  <section id="entries" class="shelf" data-bg="#D3D1C9" data-radio="#211D46" data-ink="#171029" data-inksoft="#57536B">
     <div class="shelf-head">
       <h2 class="shelf-title">Entries</h2>
       <p class="shelf-note">writing, filed by date</p>
@@ -443,7 +447,7 @@
     </ul>
   </section>
 
-  <section id="stills" class="shelf" data-bg="#211D46" data-ink="#F3F0E9" data-inksoft="#B9B4D6">
+  <section id="stills" class="shelf" data-bg="#211D46" data-radio="#3B2A22" data-ink="#F3F0E9" data-inksoft="#B9B4D6">
     <div class="shelf-head">
       <h2 class="shelf-title">Stills</h2>
       <p class="shelf-note">photography, filed by series</p>
@@ -477,7 +481,7 @@
     </div>
   </section>
 
-  <section id="recordings" class="shelf" data-bg="#211D46" data-ink="#F3F0E9" data-inksoft="#B9B4D6">
+  <section id="recordings" class="shelf" data-bg="#211D46" data-radio="#3B2A22" data-ink="#F3F0E9" data-inksoft="#B9B4D6">
     <div class="shelf-head">
       <h2 class="shelf-title">Recordings</h2>
       <p class="shelf-note">film, video &amp; sound, filed by format</p>
@@ -517,7 +521,7 @@
     </ul>
   </section>
 
-  <section id="on-rotation" class="shelf" data-bg="#3B2A22" data-ink="#F3EEE5" data-inksoft="#CDBBAF">
+  <section id="on-rotation" class="shelf" data-bg="#3B2A22" data-radio="#D3D1C9" data-ink="#F3EEE5" data-inksoft="#CDBBAF">
     <div class="shelf-head">
       <h2 class="shelf-title">On Rotation</h2>
       <p class="shelf-note">what's on while I work</p>
@@ -540,7 +544,7 @@
 
 </div>
 
-<footer id="about" class="closing" data-bg="#3B2A22" data-ink="#F3EEE5" data-inksoft="#CDBBAF">
+<footer id="about" class="closing" data-bg="#3B2A22" data-radio="#D3D1C9" data-ink="#F3EEE5" data-inksoft="#CDBBAF">
   <div class="closing-inner">
     <p>Available for commissions, collaborations, and correspondence.</p>
     <div class="closing-links">
@@ -582,6 +586,7 @@
         if (entry.isIntersecting) {
           var root = document.documentElement.style;
           root.setProperty('--bg-current', entry.target.getAttribute('data-bg'));
+          root.setProperty('--radio-current', entry.target.getAttribute('data-radio'));
           root.setProperty('--ink-current', entry.target.getAttribute('data-ink'));
           root.setProperty('--ink-soft-current', entry.target.getAttribute('data-inksoft'));
         }
