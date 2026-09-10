@@ -217,23 +217,47 @@
 
   .radio-panel {
     position: fixed; right: 20px; bottom: 20px; z-index: 65;
-    width: 222px; background:#171029; color:#F3F0E9;
-    border: 1px solid rgba(243,240,233,.15);
-    padding: 14px 16px; box-shadow: 0 10px 28px rgba(0,0,0,.35);
+    width: 280px; background: var(--bg-current); color: var(--ink-current);
+    border: 1px solid color-mix(in srgb, var(--ink-current) 20%, transparent);
+    padding: 14px 14px; box-shadow: 0 10px 28px rgba(0,0,0,.25);
+    transition: width .2s ease, height .2s ease, padding .2s ease, border-radius .2s ease,
+                background-color .9s ease, color .9s ease, border-color .9s ease;
   }
-  .radio-label { font-size: 11px; letter-spacing:.05em; color:#B7B2CC; margin: 0 0 10px; }
-  .radio-row { display:flex; align-items:center; gap: 10px; margin-bottom: 12px; }
-  .radio-art { width:38px; height:38px; flex:none; background: linear-gradient(155deg,#3a372f,#8b8677); }
-  .radio-track { font-size: 12px; margin:0; }
-  .radio-artist { font-size: 11px; color:#B7B2CC; margin:0; }
-  .radio-controls { display:flex; align-items:center; gap: 10px; }
-  .radio-play {
-    width:24px; height:24px; flex:none; border-radius:50%; border:1px solid #F3F0E9;
-    background:none; color:#F3F0E9; font-size:10px; cursor:pointer;
+  .radio-head { display:flex; align-items:center; justify-content:space-between; margin-bottom: 10px; }
+  .radio-label { font-size: 11px; letter-spacing:.05em; color: var(--ink-soft-current); margin: 0; }
+  .radio-min {
+    width:18px; height:18px; flex:none; border-radius:50%;
+    border:1px solid color-mix(in srgb, var(--ink-current) 35%, transparent);
+    background:none; color: var(--ink-current); font-size:11px; line-height:1; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; padding:0;
   }
-  .radio-progress { flex:1; height:3px; background: rgba(243,240,233,.2); }
-  .radio-progress-fill { width:35%; height:100%; background:#8B7FE8; }
-  .radio-time { font-size: 10px; color:#B7B2CC; }
+  .radio-panel.is-minimized .radio-body { display:none; }
+
+  /* Minimized: shrink to a small round tab off to the side, not just a shorter bar */
+  .radio-panel.is-minimized {
+    width:44px; height:44px; padding:0; border-radius:50%; overflow:hidden;
+  }
+  .radio-panel.is-minimized .radio-head { margin:0; height:100%; }
+  .radio-panel.is-minimized .radio-label { display:none; }
+  .radio-panel.is-minimized .radio-min {
+    width:100%; height:100%; border-radius:50%; border:none; font-size:16px;
+  }
+
+  /* Idle state — no track selected, looks like an empty player rather than text */
+  .radio-idle { display:flex; align-items:center; gap: 10px; }
+  .radio-art-blank { width:38px; height:38px; flex:none; border:1px solid color-mix(in srgb, var(--ink-current) 30%, transparent); background:transparent; }
+  .radio-idle-main { flex:1; min-width:0; }
+  .radio-idle-title { font-size:12px; margin:0 0 8px; min-height:12px; }
+  .radio-idle-row { display:flex; align-items:center; gap:8px; }
+  .radio-idle-progress { flex:1; height:3px; background: color-mix(in srgb, var(--ink-current) 20%, transparent); }
+  .radio-idle-progress-fill { width:0%; height:100%; background: var(--accent); }
+  .radio-idle-time { font-size: 10px; color: var(--ink-soft-current); flex:none; }
+  .radio-idle-play {
+    width:26px; height:26px; flex:none; border-radius:50%; border:1px solid var(--ink-current);
+    background:none; color: var(--ink-current); font-size:10px; cursor:pointer;
+  }
+
+  .radio-embed iframe { display:block; border-radius:8px; }
 
   @media (max-width: 720px) {
     .page { padding: 0 20px; }
@@ -411,18 +435,18 @@
       <p class="shelf-note">what's on while I work</p>
     </div>
     <div class="scatter-field" aria-hidden="false">
-      <a class="scatter-track st-1"  href="#">Low Tide (Reprise)</a>
-      <a class="scatter-track st-2"  href="#">Static Room</a>
-      <a class="scatter-track st-3"  href="#">Coastline, Slowly</a>
-      <a class="scatter-track st-4"  href="#">Rearview</a>
-      <a class="scatter-track st-5"  href="#">Night Shift</a>
-      <a class="scatter-track st-6"  href="#">Salt &amp; Static</a>
-      <a class="scatter-track st-7"  href="#">Keep the Porch Light On</a>
-      <a class="scatter-track st-8"  href="#">Amber Hour</a>
-      <a class="scatter-track st-9"  href="#">Tuesday, Maybe</a>
-      <a class="scatter-track st-10" href="#">Slow Weather</a>
-      <a class="scatter-track st-11" href="#">Halfway Gone</a>
-      <a class="scatter-track st-12" href="#">Paper Moon, Again</a>
+      <a class="scatter-track st-1" href="https://music.apple.com/us/song/choppa/1642360495" data-embed="https://embed.music.apple.com/us/album/choppa/1642359525?i=1642360495">Choppa</a>
+      <a class="scatter-track st-2" href="https://music.apple.com/us/song/other-people/509665361" data-embed="https://embed.music.apple.com/us/album/other-people/509665145?i=509665361">Other People</a>
+      <a class="scatter-track st-3" href="https://music.apple.com/us/song/helluva-night/1741014382" data-embed="https://embed.music.apple.com/us/album/helluva-night/1741014093?i=1741014382">Helluva Night</a>
+      <a class="scatter-track st-4" href="https://music.apple.com/us/song/you-cant-save-me/1710288502" data-embed="https://embed.music.apple.com/us/album/you-cant-save-me/1710287981?i=1710288502">You Can't Save Me</a>
+      <a class="scatter-track st-5" href="https://music.apple.com/us/song/watch-n-learn/1443105733" data-embed="https://embed.music.apple.com/us/album/watch-n-learn/1443105016?i=1443105733">Watch 'n' Learn</a>
+      <a class="scatter-track st-6" href="https://music.apple.com/us/song/tyrant/1738371321" data-embed="https://embed.music.apple.com/us/album/tyrant/1738370746?i=1738371321">TYRANT</a>
+      <a class="scatter-track st-7" href="https://music.apple.com/us/song/watery/1392726369" data-embed="https://embed.music.apple.com/us/album/watery/1392726029?i=1392726369">Watery</a>
+      <a class="scatter-track st-8" href="https://music.apple.com/us/song/the-recipe-feat-dr-dre-bonus-track/1471264140" data-embed="https://embed.music.apple.com/us/album/the-recipe-feat-dr-dre-bonus-track/1471264092?i=1471264140">The Recipe</a>
+      <a class="scatter-track st-9" href="https://music.apple.com/us/song/buy-a-heart-feat-meek-mill/1440917448" data-embed="https://embed.music.apple.com/us/album/buy-a-heart-feat-meek-mill/1440916770?i=1440917448">Buy a Heart</a>
+      <a class="scatter-track st-10" href="https://music.apple.com/us/song/so-appalled-feat-ja%C3%BF-z-pusha-t-prynce-cy-hi-swizz-beatz-rza/1440742914" data-embed="https://embed.music.apple.com/us/album/so-appalled-feat-ja%C3%BF-z-pusha-t-prynce-cy-hi-swizz-beatz-rza/1440742903?i=1440742914">So Appalled</a>
+      <a class="scatter-track st-11" href="https://music.apple.com/us/song/my-wheels/1443212165" data-embed="https://embed.music.apple.com/us/album/my-wheels/1443212161?i=1443212165">My Wheels</a>
+      <a class="scatter-track st-12" href="https://music.apple.com/us/song/waves-on-every-chain/1655003216" data-embed="https://embed.music.apple.com/us/album/waves-on-every-chain/1655003215?i=1655003216">Waves On Every Chain</a>
     </div>
   </section>
 
@@ -439,19 +463,24 @@
   </div>
 </footer>
 
-<aside class="radio-panel">
-  <p class="radio-label">Radio</p>
-  <div class="radio-row">
-    <div class="radio-art"></div>
-    <div>
-      <p class="radio-track">Low Tide (Reprise)</p>
-      <p class="radio-artist">J. Marlow</p>
-    </div>
+<aside class="radio-panel" id="radioPanel">
+  <div class="radio-head">
+    <p class="radio-label">Radio</p>
+    <button class="radio-min" id="radioMin" aria-label="Minimize">–</button>
   </div>
-  <div class="radio-controls">
-    <button class="radio-play" aria-label="Play">►</button>
-    <div class="radio-progress"><div class="radio-progress-fill"></div></div>
-    <span class="radio-time">1:12</span>
+  <div class="radio-body" id="radioBody">
+    <div class="radio-idle" id="radioIdle">
+      <div class="radio-art-blank"></div>
+      <div class="radio-idle-main">
+        <p class="radio-idle-title" id="radioIdleTitle"></p>
+        <div class="radio-idle-row">
+          <div class="radio-idle-progress"><div class="radio-idle-progress-fill"></div></div>
+          <span class="radio-idle-time">0:00</span>
+        </div>
+      </div>
+      <button class="radio-idle-play" id="radioIdlePlay" aria-label="Play">►</button>
+    </div>
+    <div class="radio-embed" id="radioEmbed" style="display:none;"></div>
   </div>
 </aside>
 
@@ -560,6 +589,45 @@
   // The ticker now shows the live timestamp itself, repeated enough times
   // that the seamless -50% loop never shows a gap, regardless of how wide
   // the centered ticker box ends up being at any window size.
+  // Radio panel: idle (blank) until a track plays, then swaps in the
+  // real Apple Music embed. Clicking a track directly, or pressing play
+  // on the idle player (which shuffles), both route through here.
+  function playEmbed(embedUrl){
+    var wrap = document.getElementById('radioEmbed');
+    var idle = document.getElementById('radioIdle');
+    wrap.innerHTML = '<iframe allow="autoplay *; encrypted-media *;" frameborder="0" height="150" style="width:100%;overflow:hidden;background:transparent;border:none;border-radius:8px;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="' + embedUrl + '"></iframe>';
+    if (idle) idle.style.display = 'none';
+    wrap.style.display = 'block';
+  }
+
+  document.querySelectorAll('.scatter-track[data-embed]').forEach(function(a){
+    a.addEventListener('click', function(e){
+      e.preventDefault();
+      playEmbed(a.getAttribute('data-embed'));
+    });
+  });
+
+  var idlePlay = document.getElementById('radioIdlePlay');
+  if (idlePlay) {
+    idlePlay.addEventListener('click', function(){
+      var tracks = document.querySelectorAll('.scatter-track[data-embed]');
+      if (!tracks.length) return;
+      var pick = tracks[Math.floor(Math.random() * tracks.length)];
+      playEmbed(pick.getAttribute('data-embed'));
+    });
+  }
+
+  // Minimize collapses the panel to a small round tab, not just a shorter bar
+  var radioMin = document.getElementById('radioMin');
+  var radioPanel = document.getElementById('radioPanel');
+  if (radioMin && radioPanel) {
+    radioMin.addEventListener('click', function(){
+      var min = radioPanel.classList.toggle('is-minimized');
+      radioMin.textContent = min ? '\u266A' : '\u2013';
+      radioMin.setAttribute('aria-label', min ? 'Expand radio' : 'Minimize radio');
+    });
+  }
+
   function updateStamp(){
     var now = new Date();
     var atl = new Intl.DateTimeFormat('en-US', { hour:'2-digit', minute:'2-digit', hour12:false, timeZone:'America/New_York' }).format(now);
