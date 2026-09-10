@@ -75,6 +75,22 @@
   .masthead.is-scrolled .tab .label { opacity:0; }
   .masthead.is-scrolled .tab .glyph { opacity:1; transform: scale(1); }
 
+  /* Mobile nav — hidden on desktop entirely. Below 720px the four text
+     tabs never fit next to the ticker, so they show as icons-only from
+     the start; once scrolling begins they collapse further into a
+     single hamburger that opens a dropdown with the full names. */
+  .nav-toggle { display:none; width:36px; height:36px; flex:none; align-items:center; justify-content:center; background:none; border:none; color:var(--ink-current); padding:0; cursor:pointer; }
+  .nav-dropdown {
+    position:fixed; top: var(--nav-h); right:16px; z-index:70; min-width:150px;
+    display:flex; flex-direction:column;
+    background: var(--bg-current); border:1px solid color-mix(in srgb, var(--ink-current) 20%, transparent);
+    opacity:0; transform: translateY(-6px); pointer-events:none;
+    transition: opacity .2s ease, transform .2s ease, top .3s ease, background-color .9s ease, border-color .9s ease;
+  }
+  .nav-dropdown.is-open { opacity:1; transform: translateY(0); pointer-events:auto; }
+  .nav-dropdown a { padding: 13px 16px; font-family: var(--font-mono); font-size:13px; color:var(--ink-current); border-bottom:1px solid color-mix(in srgb, var(--ink-current) 10%, transparent); }
+  .nav-dropdown a:last-child { border-bottom:none; }
+
   .hero { padding: calc(var(--nav-h) + 64px) 0 48px; }
   .hero-row { display:flex; align-items:center; justify-content:space-between; gap:24px; flex-wrap:wrap; }
   .hero-name {
@@ -243,21 +259,28 @@
     width:100%; height:100%; border-radius:50%; border:none; font-size:16px;
   }
 
-  /* Idle state — no track selected, looks like an empty player rather than text */
+  /* Idle state — no track selected, looks like an empty player rather than text.
+     This same markup is reused once playing: no separate "now playing" layout,
+     just the title/progress/time filling in and the art-blank swatch tinting
+     to --accent. No album art, no logo, no third-party styling of any kind. */
   .radio-idle { display:flex; align-items:center; gap: 10px; }
-  .radio-art-blank { width:38px; height:38px; flex:none; border:1px solid color-mix(in srgb, var(--ink-current) 30%, transparent); background:transparent; }
+  .radio-art-blank { width:38px; height:38px; flex:none; border:1px solid color-mix(in srgb, var(--ink-current) 30%, transparent); background:transparent; transition: background-color .4s ease; }
+  .radio-art-blank.is-active { background: var(--accent); }
   .radio-idle-main { flex:1; min-width:0; }
-  .radio-idle-title { font-size:12px; margin:0 0 8px; min-height:12px; }
+  .radio-idle-title { font-size:12px; margin:0 0 8px; min-height:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .radio-idle-row { display:flex; align-items:center; gap:8px; }
-  .radio-idle-progress { flex:1; height:3px; background: color-mix(in srgb, var(--ink-current) 20%, transparent); }
+  .radio-idle-progress { flex:1; height:3px; background: color-mix(in srgb, var(--ink-current) 20%, transparent); cursor:pointer; }
   .radio-idle-progress-fill { width:0%; height:100%; background: var(--accent); }
   .radio-idle-time { font-size: 10px; color: var(--ink-soft-current); flex:none; }
   .radio-idle-play {
     width:26px; height:26px; flex:none; border-radius:50%; border:1px solid var(--ink-current);
     background:none; color: var(--ink-current); font-size:10px; cursor:pointer;
   }
-
-  .radio-embed iframe { display:block; border-radius:8px; }
+  /* Small text credit only — no Apple logo, no badge graphic, no embed
+     styling. Apple's API terms ask that preview clips stay near a credit;
+     this is the minimum version of that (shrink/remove at your discretion). */
+  .radio-attrib { display:block; font-size: 9px; letter-spacing:.03em; color: var(--ink-soft-current); opacity:.7; margin-top: 8px; }
+  .radio-attrib a { border-bottom: 1px solid color-mix(in srgb, var(--ink-soft-current) 50%, transparent); }
 
   @media (max-width: 720px) {
     .page { padding: 0 20px; }
@@ -276,7 +299,17 @@
        that were sized for a mouse cursor. */
     .radio-min { width:32px; height:32px; font-size:14px; }
     .radio-idle-play { width:38px; height:38px; font-size:13px; }
-    .tab { min-height:40px; padding:0 12px; }
+
+    /* Nav: four full-word tabs never fit next to the ticker on a phone
+       width, so they're icon-only from the start (not just after
+       scroll, unlike desktop's hover/scroll swap). Once scrolling
+       begins, the four icons themselves give way to one hamburger
+       button that opens the dropdown with full names. */
+    .tab { width:36px; height:36px; padding:0; }
+    .tab .label { display:none; }
+    .tab .glyph { position:static; opacity:1; transform:none; }
+    .masthead.is-scrolled .tabs { display:none; }
+    .masthead.is-scrolled .nav-toggle { display:flex; }
 
     /* :hover never fires on touch, so the series-name label on Stills
        and the "0 words"/date column on Entries need mobile-native
@@ -348,6 +381,15 @@
       <a class="tab" href="#recordings"><span class="label">Recordings</span><span class="glyph"><svg viewBox="0 0 24 24" width="16" height="16"><rect x="6" y="6" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></span></a>
       <a class="tab" href="#about"><span class="label">About</span><span class="glyph"><svg viewBox="0 0 24 24" width="16" height="16"><circle cx="12" cy="12" r="3" fill="currentColor"/></svg></span></a>
     </nav>
+    <button class="nav-toggle" id="navToggle" aria-label="Open section menu" aria-expanded="false" aria-controls="navDropdown">
+      <svg viewBox="0 0 24 24" width="18" height="18"><line x1="4" y1="7" x2="20" y2="7" stroke="currentColor" stroke-width="1.6"/><line x1="4" y1="12" x2="20" y2="12" stroke="currentColor" stroke-width="1.6"/><line x1="4" y1="17" x2="20" y2="17" stroke="currentColor" stroke-width="1.6"/></svg>
+    </button>
+    <div class="nav-dropdown" id="navDropdown">
+      <a href="#entries">Entries</a>
+      <a href="#stills">Stills</a>
+      <a href="#recordings">Recordings</a>
+      <a href="#about">About</a>
+    </div>
   </div>
 </header>
 
@@ -472,18 +514,18 @@
       <p class="shelf-note">what's on while I work</p>
     </div>
     <div class="scatter-field" aria-hidden="false">
-      <a class="scatter-track st-1" href="https://music.apple.com/us/song/choppa/1642360495" data-embed="https://embed.music.apple.com/us/album/choppa/1642359525?i=1642360495">Choppa</a>
-      <a class="scatter-track st-2" href="https://music.apple.com/us/song/other-people/509665361" data-embed="https://embed.music.apple.com/us/album/other-people/509665145?i=509665361">Other People</a>
-      <a class="scatter-track st-3" href="https://music.apple.com/us/song/helluva-night/1741014382" data-embed="https://embed.music.apple.com/us/album/helluva-night/1741014093?i=1741014382">Helluva Night</a>
-      <a class="scatter-track st-4" href="https://music.apple.com/us/song/you-cant-save-me/1710288502" data-embed="https://embed.music.apple.com/us/album/you-cant-save-me/1710287981?i=1710288502">You Can't Save Me</a>
-      <a class="scatter-track st-5" href="https://music.apple.com/us/song/watch-n-learn/1443105733" data-embed="https://embed.music.apple.com/us/album/watch-n-learn/1443105016?i=1443105733">Watch 'n' Learn</a>
-      <a class="scatter-track st-6" href="https://music.apple.com/us/song/tyrant/1738371321" data-embed="https://embed.music.apple.com/us/album/tyrant/1738370746?i=1738371321">TYRANT</a>
-      <a class="scatter-track st-7" href="https://music.apple.com/us/song/watery/1392726369" data-embed="https://embed.music.apple.com/us/album/watery/1392726029?i=1392726369">Watery</a>
-      <a class="scatter-track st-8" href="https://music.apple.com/us/song/the-recipe-feat-dr-dre-bonus-track/1471264140" data-embed="https://embed.music.apple.com/us/album/the-recipe-feat-dr-dre-bonus-track/1471264092?i=1471264140">The Recipe</a>
-      <a class="scatter-track st-9" href="https://music.apple.com/us/song/buy-a-heart-feat-meek-mill/1440917448" data-embed="https://embed.music.apple.com/us/album/buy-a-heart-feat-meek-mill/1440916770?i=1440917448">Buy a Heart</a>
-      <a class="scatter-track st-10" href="https://music.apple.com/us/song/so-appalled-feat-ja%C3%BF-z-pusha-t-prynce-cy-hi-swizz-beatz-rza/1440742914" data-embed="https://embed.music.apple.com/us/album/so-appalled-feat-ja%C3%BF-z-pusha-t-prynce-cy-hi-swizz-beatz-rza/1440742903?i=1440742914">So Appalled</a>
-      <a class="scatter-track st-11" href="https://music.apple.com/us/song/my-wheels/1443212165" data-embed="https://embed.music.apple.com/us/album/my-wheels/1443212161?i=1443212165">My Wheels</a>
-      <a class="scatter-track st-12" href="https://music.apple.com/us/song/waves-on-every-chain/1655003216" data-embed="https://embed.music.apple.com/us/album/waves-on-every-chain/1655003215?i=1655003216">Waves On Every Chain</a>
+      <a class="scatter-track st-1" data-trackid="1642360495" href="https://music.apple.com/us/song/choppa/1642360495">Choppa</a>
+      <a class="scatter-track st-2" data-trackid="509665361" href="https://music.apple.com/us/song/other-people/509665361">Other People</a>
+      <a class="scatter-track st-3" data-trackid="1741014382" href="https://music.apple.com/us/song/helluva-night/1741014382">Helluva Night</a>
+      <a class="scatter-track st-4" data-trackid="1710288502" href="https://music.apple.com/us/song/you-cant-save-me/1710288502">You Can't Save Me</a>
+      <a class="scatter-track st-5" data-trackid="1443105733" href="https://music.apple.com/us/song/watch-n-learn/1443105733">Watch 'n' Learn</a>
+      <a class="scatter-track st-6" data-trackid="1738371321" href="https://music.apple.com/us/song/tyrant/1738371321">TYRANT</a>
+      <a class="scatter-track st-7" data-trackid="1392726369" href="https://music.apple.com/us/song/watery/1392726369">Watery</a>
+      <a class="scatter-track st-8" data-trackid="1471264140" href="https://music.apple.com/us/song/the-recipe-feat-dr-dre-bonus-track/1471264140">The Recipe</a>
+      <a class="scatter-track st-9" data-trackid="1440917448" href="https://music.apple.com/us/song/buy-a-heart-feat-meek-mill/1440917448">Buy a Heart</a>
+      <a class="scatter-track st-10" data-trackid="1440742914" href="https://music.apple.com/us/song/so-appalled-feat-ja%C3%BF-z-pusha-t-prynce-cy-hi-swizz-beatz-rza/1440742914">So Appalled</a>
+      <a class="scatter-track st-11" data-trackid="1443212165" href="https://music.apple.com/us/song/my-wheels/1443212165">My Wheels</a>
+      <a class="scatter-track st-12" data-trackid="1655003216" href="https://music.apple.com/us/song/waves-on-every-chain/1655003216">Waves On Every Chain</a>
     </div>
   </section>
 
@@ -507,19 +549,20 @@
   </div>
   <div class="radio-body" id="radioBody">
     <div class="radio-idle" id="radioIdle">
-      <div class="radio-art-blank"></div>
+      <div class="radio-art-blank" id="radioArt"></div>
       <div class="radio-idle-main">
         <p class="radio-idle-title" id="radioIdleTitle"></p>
         <div class="radio-idle-row">
-          <div class="radio-idle-progress"><div class="radio-idle-progress-fill"></div></div>
-          <span class="radio-idle-time">0:00</span>
+          <div class="radio-idle-progress" id="radioProgress"><div class="radio-idle-progress-fill" id="radioProgressFill"></div></div>
+          <span class="radio-idle-time" id="radioTime">0:00</span>
         </div>
       </div>
       <button class="radio-idle-play" id="radioIdlePlay" aria-label="Play">►</button>
     </div>
-    <div class="radio-embed" id="radioEmbed" style="display:none;"></div>
+    <span class="radio-attrib">30-sec previews via <a href="https://music.apple.com" target="_blank" rel="noopener">Apple Music</a></span>
   </div>
 </aside>
+<audio id="radioAudio" preload="none"></audio>
 
 <script>
 (function(){
@@ -539,10 +582,32 @@
   }
 
   var masthead = document.querySelector('.masthead');
+  var navToggle = document.getElementById('navToggle');
+  var navDropdown = document.getElementById('navDropdown');
+  function closeNavDropdown(){
+    if (!navDropdown) return;
+    navDropdown.classList.remove('is-open');
+    if (navToggle) navToggle.setAttribute('aria-expanded', 'false');
+  }
+  if (navToggle && navDropdown) {
+    navToggle.addEventListener('click', function(){
+      var open = navDropdown.classList.toggle('is-open');
+      navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    navDropdown.querySelectorAll('a').forEach(function(a){
+      a.addEventListener('click', closeNavDropdown);
+    });
+    document.addEventListener('click', function(e){
+      if (navDropdown.classList.contains('is-open') && !navDropdown.contains(e.target) && e.target !== navToggle && !navToggle.contains(e.target)) {
+        closeNavDropdown();
+      }
+    });
+  }
   window.addEventListener('scroll', function(){
     var scrolled = window.scrollY > 40;
     masthead.classList.toggle('is-scrolled', scrolled);
     document.documentElement.style.setProperty('--nav-h', scrolled ? '46px' : '68px');
+    if (!scrolled) closeNavDropdown();
   }, { passive: true });
 
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -626,33 +691,114 @@
   // The ticker now shows the live timestamp itself, repeated enough times
   // that the seamless -50% loop never shows a gap, regardless of how wide
   // the centered ticker box ends up being at any window size.
-  // Radio panel: idle (blank) until a track plays, then swaps in the
-  // real Apple Music embed. Clicking a track directly, or pressing play
-  // on the idle player (which shuffles), both route through here.
-  function playEmbed(embedUrl){
-    var wrap = document.getElementById('radioEmbed');
-    var idle = document.getElementById('radioIdle');
-    wrap.innerHTML = '<iframe allow="autoplay *; encrypted-media *;" frameborder="0" height="150" style="width:100%;overflow:hidden;background:transparent;border:none;border-radius:8px;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="' + embedUrl + '"></iframe>';
-    if (idle) idle.style.display = 'none';
-    wrap.style.display = 'block';
+  //
+  // Radio panel: no iframe, no Apple UI. Clicking a track (or the idle
+  // play button, which shuffles) fetches a 30-second preview clip from
+  // Apple's public lookup API and plays it through a plain <audio>
+  // element, with this panel as the only visible UI. If a given track's
+  // lookup fails — the API's CORS support is known to be inconsistent —
+  // the title becomes a plain link out to the real song instead of a
+  // dead click.
+  var audioEl = document.getElementById('radioAudio');
+  var titleEl = document.getElementById('radioIdleTitle');
+  var artEl = document.getElementById('radioArt');
+  var playBtn = document.getElementById('radioIdlePlay');
+  var progressEl = document.getElementById('radioProgress');
+  var progressFillEl = document.getElementById('radioProgressFill');
+  var timeEl = document.getElementById('radioTime');
+  var previewCache = {};
+
+  function formatTime(sec){
+    if (!isFinite(sec) || sec < 0) sec = 0;
+    var m = Math.floor(sec / 60), s = Math.floor(sec % 60);
+    return m + ':' + (s < 10 ? '0' : '') + s;
   }
 
-  document.querySelectorAll('.scatter-track[data-embed]').forEach(function(a){
+  function fetchPreviewUrl(trackId){
+    if (previewCache[trackId] !== undefined) return Promise.resolve(previewCache[trackId]);
+    return fetch('https://itunes.apple.com/lookup?id=' + trackId)
+      .then(function(res){ return res.json(); })
+      .then(function(data){
+        var url = (data && data.results && data.results[0] && data.results[0].previewUrl) || null;
+        previewCache[trackId] = url;
+        return url;
+      })
+      .catch(function(){ previewCache[trackId] = null; return null; });
+  }
+
+  function setTitleAsFallbackLink(title, href){
+    titleEl.textContent = title + ' — preview unavailable';
+    titleEl.innerHTML = '';
+    var link = document.createElement('a');
+    link.href = href; link.target = '_blank'; link.rel = 'noopener';
+    link.textContent = title + ' — listen on Apple Music';
+    titleEl.appendChild(link);
+    artEl.classList.remove('is-active');
+    playBtn.textContent = '►';
+  }
+
+  function playTrack(anchorEl){
+    var trackId = anchorEl.getAttribute('data-trackid');
+    var title = anchorEl.textContent;
+    var href = anchorEl.getAttribute('href');
+    titleEl.textContent = title + ' — loading…';
+    progressFillEl.style.width = '0%';
+    timeEl.textContent = '0:00';
+    fetchPreviewUrl(trackId).then(function(url){
+      if (!url) { setTitleAsFallbackLink(title, href); return; }
+      audioEl.src = url;
+      audioEl.play().then(function(){
+        titleEl.textContent = title;
+        artEl.classList.add('is-active');
+        playBtn.textContent = '❚❚';
+      }).catch(function(){ setTitleAsFallbackLink(title, href); });
+    });
+  }
+
+  function pickRandomTrack(excludeEl){
+    var tracks = Array.prototype.slice.call(document.querySelectorAll('.scatter-track[data-trackid]'));
+    if (excludeEl && tracks.length > 1) tracks = tracks.filter(function(t){ return t !== excludeEl; });
+    return tracks[Math.floor(Math.random() * tracks.length)];
+  }
+
+  document.querySelectorAll('.scatter-track[data-trackid]').forEach(function(a){
     a.addEventListener('click', function(e){
       e.preventDefault();
-      playEmbed(a.getAttribute('data-embed'));
+      playTrack(a);
     });
   });
 
-  var idlePlay = document.getElementById('radioIdlePlay');
-  if (idlePlay) {
-    idlePlay.addEventListener('click', function(){
-      var tracks = document.querySelectorAll('.scatter-track[data-embed]');
-      if (!tracks.length) return;
-      var pick = tracks[Math.floor(Math.random() * tracks.length)];
-      playEmbed(pick.getAttribute('data-embed'));
+  if (playBtn) {
+    playBtn.addEventListener('click', function(){
+      if (audioEl.src && !audioEl.ended) {
+        if (audioEl.paused) { audioEl.play(); playBtn.textContent = '❚❚'; }
+        else { audioEl.pause(); playBtn.textContent = '►'; }
+        return;
+      }
+      playTrack(pickRandomTrack());
     });
   }
+
+  if (progressEl) {
+    progressEl.addEventListener('click', function(e){
+      if (!audioEl.duration) return;
+      var rect = progressEl.getBoundingClientRect();
+      var ratio = Math.min(Math.max((e.clientX - rect.left) / rect.width, 0), 1);
+      audioEl.currentTime = ratio * audioEl.duration;
+    });
+  }
+
+  audioEl.addEventListener('timeupdate', function(){
+    if (!audioEl.duration) return;
+    progressFillEl.style.width = ((audioEl.currentTime / audioEl.duration) * 100) + '%';
+    timeEl.textContent = formatTime(audioEl.currentTime);
+  });
+
+  // 30-second preview ends — keep the ambient "radio" feel going by
+  // rolling into another random track rather than just stopping.
+  audioEl.addEventListener('ended', function(){
+    playTrack(pickRandomTrack());
+  });
 
   // Minimize collapses the panel to a small round tab, not just a shorter bar
   var radioMin = document.getElementById('radioMin');
